@@ -41,7 +41,7 @@ jobs:
             cd /home/projects/
             tar -xf networkparser.tar
             rm networkparser.tar
-            mv NetworkParserArchive/ NetworkParser
+            mv -f NetworkParserArchive/ NetworkParser
             cd NetworkParser/
             rm -f .env
             touch .env

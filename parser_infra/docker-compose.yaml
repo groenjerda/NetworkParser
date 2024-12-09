@@ -14,7 +14,7 @@ services:
       && python3 manage.py collectstatic --no-input --settings=netparser.settings.prod 
       && gunicorn --bind 0.0.0.0:8000 --env=DJANGO_SETTINGS_MODULE=netparser.settings.prod netparser.wsgi"
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - parser_volume:/NetworkParser/netparser/database/
       - static:/NetworkParser/netparser/collected_static/
