@@ -1,0 +1,20 @@
+{% extends "registration/users_base.html" %}
+
+{% block title %}Войти{% endblock %}
+{% block card %}
+  <div class="card-body">
+    {% include 'registration/includes/errors_check.html' %}
+    <form method="POST" 
+      {% if action_url %}
+        action="{% url action_url %}"
+      {% endif %}
+    >
+      {% include "registration/includes/form.html" %}
+      <div class="text-center">
+        <button type="submit" class="btn btn-warning fs-5 me-2 my-4">
+          Войти
+        </button>
+      </div>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load user_filters %}
+{% load static %}
+
+{% block content %}
+{% if user|has_group:"users" or user.is_superuser %}
+	{% include 'parser/includes/search_form.html' %}
+{% else %}
+  <div class="container container-style">
+    <div class="row justify-content-center">
+      <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12 p-3">
+        <div class="users-form card">
+          <div class="card-body">
+            <p class="fs-5 text-muted-white text-center my-4">
+              Для дальнейшей работы подтвердите вашу учетную запись у администратора
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block modals %}
+  {% if messages %}
+    <div class="modal fade" id="registrationModal" tabindex="-1" data-bs-backdrop="static" aria-labelledby="registrationModalLabel" aria-hidden="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-white">
+          <div class="modal-header my-2">
+            <h1 class="modal-title fs-3 mx-auto" id="registrationModalLabel">Регистрация выполнена!</h1>
+          </div>
+          <div class="modal-body">
+            {% for message in messages %}
+              <p class="fs-5">{{ message|safe }}</p>
+            {% endfor %}
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-warning fs-5" data-bs-dismiss="modal">К работе!</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+      $(window).on('load', function() {
+          $('#registrationModal').modal('show')
+      });
+  </script>
+  <script>
+      $(document).ready(function() {
+          $('#searchform').on('submit', function(e) {
+              e.preventDefault(); // Предотвращаем перезагрузку страницы
+              const link = $('#link').val();
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "parser:parser" %}',
+                  data: $(this).serialize(),
+                  xhrFields: {
+                      responseType: 'blob' // Указываем, что ожидаем файл
+                  },
+                  success: function (data) {
+                      var url = window.URL.createObjectURL(data); // Создает временный URL-адрес для загружаемого файла
+                      // Создается новый элемент ссылки, который будет использоваться для скачивания файла.
+                      var anchor = document.createElement('a');
+                      anchor.href = url; // Ссылка получает атрибут href с созданным URL
+                      // Устанавливается атрибут download, который указывает имя файла, который будет загружен пользователем
+                      anchor.download = 'output.txt';
+                      document.body.append(anchor); // Элемент ссылки добавляется в тело документа
+                      anchor.click(); // Симулируется клик на ссылке, чтобы инициировать скачивание
+                      anchor.remove(); // После этого ссылка удаляется из документа
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('Ошибка при загрузке:', error);
+                  }
+              });
+          });
+      });
+  </script>
+{% endblock %}
+

@@ -1,0 +1,36 @@
+services:
+  network_parser:
+    image: network_parser_image
+    container_name: network_parser_container
+    restart: always
+    build:
+      context: ../
+      dockerfile: ./parser_infra/Dockerfile
+    command: >
+      sh -c "cd netparser
+      && python3 manage.py makemigrations --settings=netparser.settings.prod 
+      && python3 manage.py migrate --settings=netparser.settings.prod 
+      && python3 manage.py auto_createsuperuser --settings=netparser.settings.prod 
+      && python3 manage.py collectstatic --no-input --settings=netparser.settings.prod 
+      && gunicorn --bind 0.0.0.0:8000 --env=DJANGO_SETTINGS_MODULE=netparser.settings.prod netparser.wsgi"
+    ports:
+      - "8000:8000"
+    volumes:
+      - parser_volume:/NetworkParser/netparser/database/
+      - static:/NetworkParser/netparser/collected_static/
+
+  nginx:
+    image: nginx:1.22.1
+    restart: always
+    volumes:
+      - ./nginx:/etc/nginx/templates
+      - static:/staticfiles/
+    ports:
+      - "80:80"
+    depends_on:
+      - network_parser
+
+volumes:
+  parser_volume:
+  static:
+  nginx_volume:

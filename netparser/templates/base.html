@@ -1,0 +1,50 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+  	<title>
+      {% block title %}
+        NetworkParser
+      {% endblock %}
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/favicon/favicon-32x32.png' %}">
+		<link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/favicon/favicon-16x16.png' %}">
+		<link rel="manifest" href="{% static 'icons/favicon/site.webmanifest' %}">
+		<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+
+  </head>
+
+  <body class="d-flex flex-column">
+		<header>
+			{% include 'includes/menu.html' %}
+		</header>
+		<!-- Page Content  -->
+		<main id="content" class="flex-shrink-0">
+			<div class="particles-js" id="particles-js">
+				{% block content %}
+					Контент страницы
+				{% endblock %}
+			</div>
+			<div class="btn-up btn-up_hide"></div>
+		</main>
+
+		<footer class="footer mt-auto py-0 bg-body-tertiary"></footer>
+
+
+		{% block modals %}
+		{% endblock %}
+
+		<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+		<script src="{% static 'js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'js/up_button.js' %}"></script>
+		<script src="{% static 'js/particles.min.js' %}"></script>
+		<script src="{% static 'js/app.js' %}"></script>
+
+		{% block scripts %}
+		{% endblock %}
+  </body>
+</html>

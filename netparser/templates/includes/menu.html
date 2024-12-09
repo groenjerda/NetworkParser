@@ -1,0 +1,46 @@
+{% load static %}
+
+<nav class="menu navbar navbar-expand-lg p-3 mb-0 users-form fixed-top">
+  <div class="container">
+    <div class="container-fluid d-flex flex-wrap justify-content-center align-items-center justify-content-md-between">
+      <a href="/" class="menu-title d-flex align-items-center text-white text-decoration-none me-3">
+        <img class="me-2" src="{% static 'icons/favicon/android-chrome-192x192.png'%}" height="40" width="40">
+        <span class="fs-4 d-none d-sm-block">NetworkParser</span>
+      </a>
+      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item active">
+            <a class="nav-link text-white fs-5" href="{% url 'parser:parser' %}">Главная</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white fs-5" href="#">О программе</a>
+          </li>
+        {% endif %}
+      </ul>
+
+      <div class="text-end">
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+          <li class="nav-item m-2">
+            {% if user.is_authenticated %}
+              <form method="post" action="{% url 'users:logout' %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-light fs-5" type="submit">Выйти</button>
+              </form>
+<!--              <a class="btn btn-outline-light" href="{% url 'users:logout' %}">Выйти</a>-->
+            {% else %}
+              <a class="btn btn-outline-light fs-5" href="{% url 'users:login' %}">Войти</a>
+            {% endif %}
+          </li>
+          {% if not user.is_authenticated %}
+            <li class="nav-item m-2">
+              <a class="btn btn-warning fs-5" href="{% url 'users:signup' %}">Регистрация</a>
+            </li>
+          {% endif %}
+          <li class="mx-2 my-auto fs-5 text-center text-muted-white">
+            <strong>{{ user.username }}</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
