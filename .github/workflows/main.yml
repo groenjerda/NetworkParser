@@ -48,7 +48,7 @@ jobs:
             echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
             cd parser_infra/
             docker compose down
-            docker image rm network_parser_image nginx
+            docker image rm network_parser_image
             docker compose up -d --build
 
   send_message:
