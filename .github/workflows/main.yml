@@ -31,7 +31,7 @@ jobs:
     needs: copy_project_on_server
     if: github.ref_name == 'main'
     steps:
-      - name: Run bot
+      - name: Run docker compose
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -48,7 +48,7 @@ jobs:
             echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
             cd parser_infra/
             docker compose down
-            docker image rm network_parser_image
+            docker image rm network_parser_image nginx
             docker compose up -d --build
 
   send_message:

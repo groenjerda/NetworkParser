@@ -26,7 +26,7 @@ services:
       - ./nginx:/etc/nginx/templates
       - static:/staticfiles/
     ports:
-      - "80:80"
+      - "8000:80"
     depends_on:
       - network_parser
 
