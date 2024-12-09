@@ -1,11 +1,11 @@
 services:
   network_parser:
-    image: network_parser_image
     container_name: network_parser_container
     restart: always
     build:
       context: ../
       dockerfile: ./parser_infra/Dockerfile
+    image: network_parser_image
     command: >
       sh -c "cd netparser
       && python3 manage.py makemigrations --settings=netparser.settings.prod 
