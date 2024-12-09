@@ -52,7 +52,7 @@ jobs:
 
   send_message:
     runs-on: ubuntu-latest
-    needs: run_bot
+    needs: run_parser_in_docker
     steps:
     - name: Send message
       uses: appleboy/telegram-action@master
