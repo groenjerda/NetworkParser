@@ -1,7 +1,7 @@
 from .base import *
 
 
-DEBUG = False
+DEBUG = True
 
 
 DATABASES = {
@@ -15,6 +15,6 @@ ALLOWED_HOSTS = ['*']
 
 # https
 CSRF_COOKIE_SECURE = True  # cookie-файлы только по протоколу HTTPS
-# SESSION_COOKIE_SECURE = True  # браузеры будут передавать cookie-файлы только по протоколу HTTPS
+SESSION_COOKIE_SECURE = True  # браузеры будут передавать cookie-файлы только по протоколу HTTPS
 # SECURE_SSL_REDIRECT = True  # HTTP-запросы перенаправляются на HTTPS
 
