@@ -12,9 +12,9 @@ services:
       && python3 manage.py migrate --settings=netparser.settings.prod 
       && python3 manage.py auto_createsuperuser --settings=netparser.settings.prod 
       && python3 manage.py collectstatic --no-input --settings=netparser.settings.prod 
-      && gunicorn --bind 0.0.0.0:8000 --env=DJANGO_SETTINGS_MODULE=netparser.settings.prod netparser.wsgi"
+      && gunicorn --bind 0.0.0.0:8003 --env=DJANGO_SETTINGS_MODULE=netparser.settings.prod netparser.wsgi"
     ports:
-      - "8001:8000"
+      - "8001:8003"
     volumes:
       - parser_volume:/NetworkParser/netparser/database/
       - static:/NetworkParser/netparser/collected_static/
