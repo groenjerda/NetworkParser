@@ -40,7 +40,7 @@ jobs:
           script: |
             cd /home/projects/
             docker compose -f NetworkParserProd/parser_infra/docker-compose.yaml down
-            docker image rm network_parser_image
+            docker image rm network_parser_image nginx:1.22.1
             tar -xf networkparser.tar && rm networkparser.tar
             rm -f NetworkParserProd/.env && touch NetworkParserProd/.env
             echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> NetworkParserProd/.env
