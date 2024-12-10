@@ -43,10 +43,10 @@ jobs:
             docker image rm network_parser_image nginx:1.22.1
             tar -xf networkparser.tar && rm networkparser.tar
             rm -f NetworkParserProd/.env && touch NetworkParserProd/.env
-            echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> NetworkParserProd/.env
-            echo SUPERUSER_NAME=${{ secrets.SUPERUSER_NAME }} >> NetworkParserProd/.env
-            echo SUPERUSER_PASS=${{ secrets.SUPERUSER_PASS }} >> NetworkParserProd/.env
-            echo SUPERUSER_EMAIL=${{ secrets.SUPERUSER_EMAIL }} >> NetworkParserProd/.env
+            echo SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}" >> NetworkParserProd/.env
+            echo SUPERUSER_NAME="${{ secrets.SUPERUSER_NAME }}" >> NetworkParserProd/.env
+            echo SUPERUSER_PASS="${{ secrets.SUPERUSER_PASS }}" >> NetworkParserProd/.env
+            echo SUPERUSER_EMAIL="${{ secrets.SUPERUSER_EMAIL }}" >> NetworkParserProd/.env
             docker compose -f NetworkParserProd/parser_infra/docker-compose.yaml up -d --build
 
   send_message:
