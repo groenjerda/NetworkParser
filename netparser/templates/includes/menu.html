@@ -26,7 +26,6 @@
                 {% csrf_token %}
                 <button class="btn btn-outline-light fs-5" type="submit">Выйти</button>
               </form>
-<!--              <a class="btn btn-outline-light" href="{% url 'users:logout' %}">Выйти</a>-->
             {% else %}
               <a class="btn btn-outline-light fs-5" href="{% url 'users:login' %}">Войти</a>
             {% endif %}

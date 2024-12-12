@@ -7,5 +7,6 @@ from . import views
 app_name = 'parser'
 
 urlpatterns = [
-    path('', cache_page(settings.CACHE_TIMEOUT, key_prefix='main_page')(views.parser), name='parser'),
+    # path('', cache_page(settings.CACHE_TIMEOUT, key_prefix='main_page')(views.parser), name='parser'),
+    path('', views.parser, name='parser'),
 ]
