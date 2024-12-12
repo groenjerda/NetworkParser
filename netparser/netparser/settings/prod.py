@@ -22,6 +22,6 @@ CSRF_TRUSTED_ORIGINS = ['http://netparser.work.gd']
 # SECURE_SSL_REDIRECT = True  # HTTP-запросы перенаправляются на HTTPS
 
 # http
-# CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 # SESSION_COOKIE_SECURE = False
 
