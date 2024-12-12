@@ -13,14 +13,14 @@ DATABASES = {
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['http://netparser.work.gd']
+CSRF_TRUSTED_ORIGINS = ['https://netparser.work.gd', 'http://netparser.work.gd']
 
 # https
-# CSRF_COOKIE_SECURE = True  # cookie-файлы только по протоколу HTTPS
-# SESSION_COOKIE_SECURE = True  # браузеры будут передавать cookie-файлы только по протоколу HTTPS
+CSRF_COOKIE_SECURE = True  # cookie-файлы только по протоколу HTTPS
+SESSION_COOKIE_SECURE = True  # браузеры будут передавать cookie-файлы только по протоколу HTTPS
 
 # SECURE_SSL_REDIRECT = True  # HTTP-запросы перенаправляются на HTTPS
 
 # http
-CSRF_COOKIE_SECURE = False
-SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = False
