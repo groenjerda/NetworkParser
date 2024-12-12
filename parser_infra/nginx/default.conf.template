@@ -3,6 +3,8 @@ server {
     location /static/ {
         alias /staticfiles/;
         index parser.html;
+        expires 10d;
+        add_header Cache-Control "public, max-age=864000";
     }
     location /admin/ {
         proxy_set_header Host $http_host;

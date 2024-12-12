@@ -1,7 +1,7 @@
 from .base import *
 
 
-DEBUG = True
+DEBUG = False
 
 
 DATABASES = {
@@ -23,5 +23,4 @@ CSRF_TRUSTED_ORIGINS = ['http://netparser.work.gd']
 
 # http
 CSRF_COOKIE_SECURE = False
-# SESSION_COOKIE_SECURE = False
-
+SESSION_COOKIE_SECURE = False
