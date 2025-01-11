@@ -173,3 +173,4 @@ docker-compose-local.yaml
 
 # migrations
 migrations/
+!migrations/__init__.py

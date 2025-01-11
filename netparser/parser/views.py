@@ -3,6 +3,7 @@ from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.utils import ProgrammingError
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -38,7 +39,14 @@ def group_required(*group_names):
 class Parser(LoginRequiredMixin, View):
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
-        tasks = Task.objects.filter(user=request.user)
+        try:
+            tasks = Task.objects.filter(user=request.user)
+            len(tasks)
+        except ProgrammingError as er:
+            print(type(er))
+            # Уведомить пользователя о том, что нет соединения с базой данных
+            # Или о том, что модели не созданы
+            tasks = []
         return render(
             request, 'parser/parser.html',
             context={

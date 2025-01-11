@@ -15,7 +15,7 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'HOST': '127.0.0.1',
-        # 'HOST': 'scrapy_infra-db-1',
+        # 'HOST': 'postgres_container',
         'PORT': 5432
     },
 }

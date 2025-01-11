@@ -7,7 +7,9 @@ User = get_user_model()
 
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='tasks'
+    )
     name = models.CharField(max_length=256)
     description = models.TextField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
