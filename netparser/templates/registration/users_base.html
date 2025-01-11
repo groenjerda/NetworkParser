@@ -1,14 +1,23 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block content %}
-  <div class="container container-style">
-    <div class="row justify-content-center">
-      <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12 p-3">
-        <div class="users-form card">
-          {% block card %}
-            Форма
-          {% endblock %}
+  <div class="particles-js" id="particles-js">
+    <div class="container container-style">
+      <div class="row justify-content-center">
+        <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12 p-3">
+          <div class="users-form card">
+            {% block card %}
+              Форма
+            {% endblock %}
+          </div>
         </div>
       </div>
     </div>
   </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'js/particles.min.js' %}"></script>
+  <script src="{% static 'js/app.js' %}"></script>
 {% endblock %}

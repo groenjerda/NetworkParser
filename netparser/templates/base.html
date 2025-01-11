@@ -18,22 +18,23 @@
 
   </head>
 
-  <body class="d-flex flex-column">
+
+  <body class="d-flex align-items-stretch">
 		<header>
 			{% include 'includes/menu.html' %}
 		</header>
 		<!-- Page Content  -->
-		<main id="content" class="flex-shrink-0">
-			<div class="particles-js" id="particles-js">
-				{% block content %}
-					Контент страницы
-				{% endblock %}
-			</div>
+		<main id="content" class="">
+			{% if user.is_authenticated %}
+				{% include 'includes/sidebar.html' %}
+			{% endif %}
+			{% block content %}
+				Контент страницы
+			{% endblock %}
 			<div class="btn-up btn-up_hide"></div>
 		</main>
 
 		<footer class="footer mt-auto py-0 bg-body-tertiary"></footer>
-
 
 		{% block modals %}
 		{% endblock %}
@@ -41,8 +42,6 @@
 		<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 		<script src="{% static 'js/bootstrap.min.js' %}"></script>
 		<script src="{% static 'js/up_button.js' %}"></script>
-		<script src="{% static 'js/particles.min.js' %}"></script>
-		<script src="{% static 'js/app.js' %}"></script>
 
 		{% block scripts %}
 		{% endblock %}

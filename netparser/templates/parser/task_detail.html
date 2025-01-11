@@ -1,0 +1,110 @@
+{% extends 'parser/base_parser.html' %}
+{% load user_filters %}
+{% load static %}
+
+{% block content %}
+<div class="container container-style">
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-8 col-md-10 col-sm-12 p-3">
+      <div class="users-form card p-4">
+        {% if as_info %}
+          <h3>{{ as_info.name }} ({{ as_info.provider }})</h3>
+          <div class="d-grid gap-2 d-flex justify-content-md-start mb-4 mb-lg-3">
+            <button class="download-button" type="button">
+              <span class="download-button-span">Скачать</span>
+              <svg class="download-button-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" stroke="currentColor" viewBox="0 0 14 14">
+                <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+              </svg>
+            </button>
+            <div id="download-asinfo" class="loader my-auto mx-1"></div>
+          </div>
+          <div class="table-responsive-sm">
+            <table class="networks-table w-100">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">network</th>
+                  <th scope="col">provider</th>
+                  <th scope="col">country</th>
+                  <th class="text-center" scope="col">ip_version</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for network in as_info.networks.all %}
+                  {% with i=forloop.counter %}
+                    <tr>
+                      <th scope="row">{{ i }}</th>
+                      <td>{{ network.network }}</td>
+                      <td>{{ network.provider }}</td>
+                      <td>{{ network.country }}</td>
+                      <td class="text-center">{{ network.ip_version }}</td>
+                    </tr>
+                  {% endwith %}
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <h2>Результатов по заданию не выявлено</h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $(document).ready(function($) {
+    $(".download-button").click(function(e) {
+      if ($(this).children('span').css('opacity') == 1){
+        $('#download-asinfo').css('visibility', 'inherit');
+
+        // Отправляем AJAX-запрос на скачивание файла
+        $.ajax({
+          traditional: true,
+          url: '{% url "tasks:detail" taskid %}',
+          type: 'POST',
+          data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+          xhrFields: {
+              responseType: 'blob' // Указываем, что ожидаем файл
+          },
+          success: function(response, status, xhr) {
+              // Обработка успешного ответа
+              var url = window.URL.createObjectURL(response);
+              var disposition = xhr.getResponseHeader('Content-Disposition');
+              var filename = 'result.txt'; // Имя файла по умолчанию
+
+              if (disposition && disposition.indexOf('attachment') !== -1) {
+                  var filenameRegex = /filename[^;\n*=]*=((['"].*['"])|([^;"\n]*))/;
+                  var matches = filenameRegex.exec(disposition);
+                  if (matches != null && matches[1]) {
+                      filename = matches[1].replace(/['"]/g, '');
+                  }
+              }
+              var a = document.createElement('a');
+              a.href = url;
+              a.download = filename; // Имя файла для скачивания;
+              document.body.append(a);
+              a.click();
+              a.remove();
+              $('#download-asinfo').css('visibility', 'hidden');
+          },
+          error: function(xhr, status, error) {
+              // Обработка ошибок
+            $('#download-asinfo').css('visibility', 'hidden');
+            if (xhr.status === 500) {
+                var errorResponse = JSON.parse(xhr.responseText);
+                alert('Ошибка: ' + errorResponse.error); // Отображаем сообщение об ошибке
+            }
+            else {
+              alert('Ошибка: ' + error);
+            }
+          }
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

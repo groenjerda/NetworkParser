@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load user_filters %}
+{% load tasks_filters %}
+{% load static %}
+
+{% block content %}
+<div class="container container-style">
+  <div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-8 col-md-10 col-sm-12 p-3">
+      <div class="users-form card p-4">
+        <h3>Список задач</h3>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+          <button class="delete-button" type="button">
+            <span class="delete-button-span">Удалить</span>
+            <svg class="delete-button-svg" xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+        <div class="table-responsive-sm">
+          <table id="tasks" class="networks-table w-100">
+            <thead>
+              <tr>
+                <th scope="col" class="pe-4">
+                  <label class="row-select px-2">
+                    <input class="select-all" type="checkbox">
+                  </label>
+                </th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">Задача</th>
+                <th scope="col">Статус</th>
+                <th scope="col" class="text-center" >id задачи</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in tasks %}
+                {% with i=forloop.counter %}
+                  <tr id="task_{{task.id}}" class="clickable-row" data-href="{{ task.get_absolute_url }}">
+                    <td class="row-select">
+                      <label class="row-select px-2">
+                        <input type="checkbox" name="select" class="row-select">
+                      </label>
+                    </td>
+                    <td class ="row-date">{{ task.created|date:"d.m.Y" }} {{ task.created|time:"H:i" }}</td>
+                    <td>{{ task.name }}</td>
+                    <td class="status {{ task.status|status_class }}">{{ task.status }}</td>
+                    <td class="text-center">{{ task.id }}</td>
+                  </tr>
+                {% endwith %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+  <!-- Каждая строка в таблице, кроме checkbox - ссылка на результат -->
+  <script>
+    $(document).ready(function($) {
+      $(".clickable-row").click(function(e) {
+          if (!$(e.target).hasClass("row-select")) {
+            window.location = $(this).data("href");
+          }
+      });
+    });
+  </script>
+
+  <!-- Выделение всех строк при нажатии на checkbox в заголовке таблицы -->
+  <script>
+    $(document).ready(function($) {
+      $(".select-all").change(function() {
+        if (this.checked) {
+          $(".row-select").map(function() {
+            $(this).prop("checked", true);
+          });
+        } else {
+          $(".row-select").map(function() {
+            $(this).prop("checked", false);
+          });
+        }
+      });
+    });
+  </script>
+
+  <!-- Удаление выделенных строк -->
+  <script>
+    $(document).ready(function($) {
+      $(".delete-button").click(function(e) {
+        if ($(this).children('span').css('opacity') == 1){
+          // $('table tr').has('input[name="select"]:checked').remove();
+          // $(".select-all").prop("checked", false);
+          var idsToDelete  = [];
+          $('input[name="select"]:checked').each(function() {
+            // Получаем id строки, удаляя префикс 'task_'
+            var rowId = $(this).closest('tr').attr('id'); // Получаем id строки
+            var taskId = rowId.split('_')[1]; // Извлекаем id задачи
+            idsToDelete.push(taskId); // Добавляем id в массив
+          });
+
+          // Проверяем, есть ли что-то для удаления
+          if (idsToDelete.length > 0) {
+            // Отправляем AJAX-запрос на удаление
+            $.ajax({
+              traditional: true,
+              url: '{% url "tasks:remove" %}', // Укажите ваш URL для удаления
+              type: 'POST',
+              data: {
+                  'ids': idsToDelete, // Передаем массив id
+                  'csrfmiddlewaretoken': '{{ csrf_token }}' // CSRF-токен
+              },
+              success: function(response) {
+                  // Обработка успешного ответа
+                  // Удаляем строки из таблицы
+                  idsToDelete.forEach(function(id) {
+                    $('#task_' + id).prop("checked", false);
+                    $('#task_' + id).remove(); // Удаляем строки из DOM
+                  });
+                  $(".select-all").prop("checked", false);
+              },
+              error: function(xhr, status, error) {
+                  // Обработка ошибок
+                  alert('Произошла ошибка: ' + error);
+              }
+            });
+          } else {
+            alert('Пожалуйста, выберите хотя бы одну задачу для удаления.');
+          }
+        }
+      });
+    });
+  </script>
+
+  <!-- Динамическое добавление строки в таблицу -->
+  <script type="text/javascript">
+    const url = 'ws://' + window.location.host + '/ws/tasks/';
+    const statusSocket = new WebSocket(url);
+    const statusClass = {
+      'pending': 'task-pending',
+      'running': 'task-running',
+      'finished': 'task-finished',
+      'timeout': 'task-errror'
+    };
+
+    statusSocket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      if (data.type === 'send_status_updates') {
+        const taskRow = document.getElementById('task_' + data.task_id);
+        taskRow.getElementsByClassName('status')[0].innerHTML = data.status;
+        taskRow.getElementsByClassName('status')[0].classList.add(statusClass[data.status]);
+      } else if (data.type === 'send_new_task') {
+        const task = data.task;
+        const tbodyRef = document.getElementById('tasks').getElementsByTagName('tbody')[0];
+        var newRow = tbodyRef.insertRow(0);
+        newRow.setAttribute('id', 'task_' + task.id);
+        newRow.setAttribute('class', 'clickable-row');
+        newRow.setAttribute('data-href', "{{ task.get_absolute_url }}");
+
+        var cellCheckBox = newRow.insertCell(0);
+        var cellCreated = newRow.insertCell(1);
+        var cellTaskName = newRow.insertCell(2);
+        var cellStatus = newRow.insertCell(3);
+        var cellTaskId = newRow.insertCell(4);
+
+        cellCheckBox.setAttribute('class', 'row-select')
+        cellStatus.setAttribute('class', 'status');
+        cellTaskId.setAttribute('class', 'text-center');
+
+        cellCheckBox.innerHTML = `
+          <label class="row-select px-2">
+            <input type="checkbox" name="select" class="row-select">
+          </label>
+        `
+        cellCreated.innerHTML = task.created;
+        cellTaskName.innerHTML = task.name;
+        cellStatus.innerHTML = task.status;
+        cellTaskId.innerHTML = task.id;
+      };
+    };
+
+    statusSocket.onclose = function(event) {
+      console.log('Socket closed');
+    };
+  </script>
+{% endblock %}

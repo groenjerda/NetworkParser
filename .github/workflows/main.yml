@@ -47,6 +47,10 @@ jobs:
             echo SUPERUSER_NAME="${{ secrets.SUPERUSER_NAME }}" >> NetworkParserProd/.env
             echo SUPERUSER_PASS="${{ secrets.SUPERUSER_PASS }}" >> NetworkParserProd/.env
             echo SUPERUSER_EMAIL="${{ secrets.SUPERUSER_EMAIL }}" >> NetworkParserProd/.env
+            echo POSTGRES_DB="${{ secrets.POSTGRES_DB }}" >> NetworkParserProd/.env
+            echo POSTGRES_USER="${{ secrets.POSTGRES_USER }}" >> NetworkParserProd/.env
+            echo POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" >> NetworkParserProd/.env
+            docker network ls | grep -w my_network || docker network create my_network
             docker compose -f NetworkParserProd/parser_infra/docker-compose.yaml up -d --build
 
   send_message:

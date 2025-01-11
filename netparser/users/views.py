@@ -19,6 +19,15 @@ class SignUp(CreateView):
         group, _ = Group.objects.get_or_create(name='candidate')
         new_user.groups.add(group)
         login(self.request, new_user)
-        messages.success(self.request, 'Вы успешно зарегистрировались в системе')
-        messages.success(self.request, 'Для дальнейшей работы подтвердите вашу учетную запись у администратора')
+        messages.success(
+            self.request,
+            'Вы успешно зарегистрировались в системе'
+        )
+        messages.success(
+            self.request,
+            (
+                'Для дальнейшей работы подтвердите вашу '
+                'учетную запись у администратора'
+            )
+        )
         return valid

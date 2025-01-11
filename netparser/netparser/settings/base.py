@@ -17,7 +17,9 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,6 +33,11 @@ SUPERUSER_NAME = str(os.getenv('SUPERUSER_NAME'))
 SUPERUSER_PASS = str(os.getenv('SUPERUSER_PASS'))
 SUPERUSER_EMAIL = str(os.getenv('SUPERUSER_EMAIL'))
 
+# Database credentials
+# POSTGRES_DB = str(os.getenv('POSTGRES_DB'))
+# POSTGRES_USER = str(os.getenv('POSTGRES_USER'))
+# POSTGRES_PASSWORD = str(os.getenv('POSTGRES_PASSWORD'))
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -40,6 +47,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +56,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users.apps.UsersConfig',
-    'parser.apps.ParserConfig'
+    'parser.apps.ParserConfig',
+    'tasks.apps.TasksConfig'
 ]
 
 MIDDLEWARE = [
@@ -74,27 +84,43 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages'
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'netparser.wsgi.application'
+ASGI_APPLICATION = 'netparser.asgi.application'
 
+
+CHANNEL_LAYERS = {
+    # "default": {
+    #     "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+    #     "CONFIG": {
+    #         "host": "amqp://guest:guest@127.0.0.1:5672/",
+    #     },
+    # }
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    }
+}
+
+BROKER_URL = 'redis://127.0.0.1:6379/1'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES_DIR = os.path.join(BASE_DIR, 'database')
-if not os.path.exists(DATABASES_DIR):
-    os.mkdir(DATABASES_DIR)
+DATABASES_DIR = os.path.join(BASE_DIR, 'databases')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(DATABASES_DIR, 'db.sqlite3'),
-    }
+    },
 }
 
 
@@ -103,16 +129,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # noqa
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',  # noqa
     },
 ]
 
@@ -154,3 +180,6 @@ LOGIN_REDIRECT_URL = 'parser:parser'
 # }
 
 CACHE_TIMEOUT = 864000  # 10 days
+
+USERS_GROUP = 'users'
+CANDIDATE_GROUP = 'candidate'

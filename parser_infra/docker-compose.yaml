@@ -1,7 +1,18 @@
 services:
+  redis:
+    image: redis
+    container_name: redis_container
+    restart: always
+    volumes:
+      - redis_volume:/data/
+    networks:
+      - my_network
+
   network_parser:
     container_name: network_parser_container
     restart: always
+    depends_on:
+      - redis
     build:
       context: ../
       dockerfile: ./parser_infra/Dockerfile
@@ -11,12 +22,20 @@ services:
       && python3 manage.py makemigrations --settings=netparser.settings.prod 
       && python3 manage.py migrate --settings=netparser.settings.prod 
       && python3 manage.py auto_createsuperuser --settings=netparser.settings.prod 
+      && python3 manage.py auto_creategroups --settings=netparser.settings.prod 
       && python3 manage.py collectstatic --no-input --settings=netparser.settings.prod
-      && gunicorn --bind 0.0.0.0:8003 --env=DJANGO_SETTINGS_MODULE=netparser.settings.prod --log-level debug --access-logfile=access.logs --error-logfile=error.logs --workers=1 netparser.wsgi"
+      && celery -A netparser worker --loglevel=info --detach
+      && daphne --bind 0.0.0.0 --port 8003 --access-log=access.logs netparser.asgi:application
+      "
     ports:
       - "8001:8003"
+    networks:
+      - my_network
+    environment:
+      POSTGRES_USER: scrapy_user
+      POSTGRES_PASSWORD: scrapy_user_pass
+      POSTGRES_DB: scrapy_db
     volumes:
-      - parser_volume:/NetworkParser/netparser/database/
       - static:/NetworkParser/netparser/collected_static/
 
   nginx:
@@ -27,10 +46,16 @@ services:
       - static:/staticfiles/
     ports:
       - 127.0.0.1:8000:80
+    networks:
+      - my_network
     depends_on:
       - network_parser
 
 volumes:
-  parser_volume:
   static:
   nginx_volume:
+  redis_volume:
+
+networks:
+  my_network:
+    external: true

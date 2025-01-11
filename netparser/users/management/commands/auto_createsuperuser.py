@@ -15,4 +15,6 @@ class Command(BaseCommand):
                 email=settings.SUPERUSER_EMAIL,
                 password=settings.SUPERUSER_PASS
             )
-            self.stdout.write(self.style.SUCCESS('Superuser created successfully'))
+            self.stdout.write(
+                self.style.SUCCESS('Superuser created successfully')
+            )
