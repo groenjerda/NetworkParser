@@ -137,7 +137,7 @@
 
   <!-- Динамическое добавление строки в таблицу -->
   <script type="text/javascript">
-    const url = 'ws://' + window.location.host + '/ws/tasks/';
+    const url = 'wss://' + window.location.host + '/ws/tasks/';
     const statusSocket = new WebSocket(url);
     const statusClass = {
       'pending': 'task-pending',
