@@ -171,6 +171,5 @@ netparser/collected_static/
 # local docker-compose
 docker-compose-local.yaml
 
-# migrations
-migrations/
-!migrations/__init__.py
+
+00*.py
