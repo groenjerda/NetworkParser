@@ -173,3 +173,4 @@ docker-compose-local.yaml
 
 
 00*.py
+docker.py
