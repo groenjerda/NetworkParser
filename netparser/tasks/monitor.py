@@ -4,6 +4,7 @@ from time import sleep
 from celery import shared_task
 from channels.layers import get_channel_layer
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from scrapyd_api import ScrapydAPI
 
 from .models import Task
@@ -15,7 +16,7 @@ MAX_TIME = 90
 
 
 @shared_task
-def monitor_task(taskid):
+def monitor_task(taskid, user_id):
     """
     Опрос scrapyd на предмет статуса задачи.
     Завершение работы при получении статуса finished
@@ -34,7 +35,7 @@ def monitor_task(taskid):
         if seconds_passed > MAX_TIME:
             loop.run_until_complete(
                 channel_layer.group_send(
-                    'tasks_status_updates',
+                    f'task_from_user_{user_id}',
                     {
                         'type': 'send_status_updates',
                         'task_id': task.id,
@@ -42,15 +43,22 @@ def monitor_task(taskid):
                     }
                 )
             )
+            break
         sleep(1)
         status = scrapyd.job_status(PROJECT_NAME, task.description)
         if status != initial_status:
+            try:
+                # В процессе мониторинга выполнения задачи
+                # пользователь может удалить задачу
+                task = Task.objects.get(id=taskid)
+            except ObjectDoesNotExist:
+                break
             initial_status = status
             task.status = status
             task.save()
             loop.run_until_complete(
                 channel_layer.group_send(
-                    'tasks_status_updates',
+                    f'task_from_user_{user_id}',
                     {
                         'type': 'send_status_updates',
                         'task_id': task.id,

@@ -6,30 +6,47 @@
       $(window).on('load', function() {$('#registrationModal').modal('show')});
   </script>
 
+
   <script>
-      $(document).ready(function() {
-          $('#searchform').on('submit', function(e) {
-              e.preventDefault(); // Предотвращаем перезагрузку страницы
-              $.ajax({
-                  type: 'POST',
-                  url: '{% url "parser:parser" %}',
-                  data: $(this).serialize(),
-                  success: function (task) {
-                      $('#id_link').val('');
-                      localStorage.setItem('taskid', task.id);
-                      addTaskToList(task);
-                  },
-                  error: function(xhr, status, error) {
-                      console.error('Ошибка при загрузке:', error);
-                  },
-                  timeout: 10000
-              });
-          });
-      });
+    function change_tasks_num(num) {
+        if ($('#tasks-num').text()) {
+            var tasks_num = parseInt($('#tasks-num').text(), 10) + num;
+            if (tasks_num > 0) { 
+                $('#tasks-num').text(tasks_num);
+            } else {
+                $('#tasks-num').text("");
+            }
+        } else {
+            $('#tasks-num').text("1");
+        }
+    };
+
+    $(document).ready(function() {
+        $('#searchform').on('submit', function(e) {
+            e.preventDefault(); // Предотвращаем перезагрузку страницы
+            $('#execute-task').css('visibility', 'inherit');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "parser:parser" %}',
+                data: $(this).serialize(),
+                success: function (task) {
+                    $('#id_link').val('');
+                    $('#execute-task').css('visibility', 'hidden');
+                //   localStorage.setItem('taskid', task.id);
+                    addTaskToList(task);
+                    change_tasks_num(1);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ошибка при загрузке:', error);
+                },
+                timeout: 10000
+            });
+        });
+    });
 
       function addTaskToList(task) {
           const listItem = `
-              <li>
+              <li id=li_task_"${task.id}">
                   <a class="list-group-item" href="${task.absolute_url}">
                       <div class="d-flex w-100 align-items-center justify-content-between">
                           <strong class="mb-1 text-truncate">${task.name}</strong>

@@ -89,6 +89,20 @@
 
   <!-- Удаление выделенных строк -->
   <script>
+
+    function change_tasks_num(num) {
+      if ($('#tasks-num').text()) {
+        var tasks_num = parseInt($('#tasks-num').text(), 10) + num;
+        if (tasks_num > 0) { 
+          $('#tasks-num').text(tasks_num);
+        } else {
+          $('#tasks-num').text("");
+        }
+      } else {
+        $('#tasks-num').text("1");
+      }
+    };
+
     $(document).ready(function($) {
       $(".delete-button").click(function(e) {
         if ($(this).children('span').css('opacity') == 1){
@@ -118,9 +132,11 @@
                   // Удаляем строки из таблицы
                   idsToDelete.forEach(function(id) {
                     $('#task_' + id).prop("checked", false);
-                    $('#task_' + id).remove(); // Удаляем строки из DOM
+                    $('#task_' + id).remove(); // Удаляем строки из таблицы
+                    $('#li_task_' + id).remove();  // Удаляем строки из sidebar
                   });
                   $(".select-all").prop("checked", false);
+                  change_tasks_num(-idsToDelete.length);
               },
               error: function(xhr, status, error) {
                   // Обработка ошибок
@@ -153,6 +169,7 @@
         taskRow.getElementsByClassName('status')[0].innerHTML = data.status;
         taskRow.getElementsByClassName('status')[0].classList.add(statusClass[data.status]);
       } else if (data.type === 'send_new_task') {
+        change_tasks_num(1);
         const task = data.task;
         const tbodyRef = document.getElementById('tasks').getElementsByTagName('tbody')[0];
         var newRow = tbodyRef.insertRow(0);

@@ -44,3 +44,5 @@ SESSION_COOKIE_SECURE = True  # браузеры будут передавать
 # http
 # CSRF_COOKIE_SECURE = False
 # SESSION_COOKIE_SECURE = False
+
+# unicorn --bind 0.0.0.0:8003 --env=DJANGO_SETTINGS_MODULE=netparser.settings.local --log-level debug --access-logfile=access.logs --error-logfile=error.logs --workers=1 netparser.wsgi"

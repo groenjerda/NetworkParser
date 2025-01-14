@@ -85,6 +85,12 @@ main {
   transition: .3s;
 }
 
+
+#tasks-num {
+  color: var(--yellow);
+  font-weight: bold;
+}
+
 .modal-content {
   background-color: var(--light-grey) !important;
 }

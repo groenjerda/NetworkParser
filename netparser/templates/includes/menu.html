@@ -13,7 +13,10 @@
             <a class="nav-link text-white fs-5" href="{% url 'parser:parser' %}">Главная</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link text-white fs-5" href="{% url 'tasks:tasks' %}">Задачи</a>
+            <a class="nav-link text-white fs-5" href="{% url 'tasks:tasks' %}">
+              Задачи
+              <sup id="tasks-num">{% if tasks|length > 0 %}{{ tasks|length }}{% endif %}</sup>
+            </a>
           </li>
           <li class="nav-item">
             <a class="nav-link text-white text-center fs-5" href="#">О программе</a>

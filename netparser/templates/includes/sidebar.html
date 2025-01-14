@@ -18,7 +18,7 @@
   <div class="sidebar-content ps-4 pe-4">
     <ul id="sidebarComponents" class="components">
       {% for task in tasks %}
-        <li>
+        <li id="li_task_{{ task.id }}">
           {% include 'includes/sidebar_item.html' %}
         </li>
       {% endfor %}

@@ -71,12 +71,12 @@ class Parser(LoginRequiredMixin, View):
         task_as_dict['absolute_url'] = task.get_absolute_url()
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            'tasks_status_updates',
+            f'task_from_user_{self.request.user.id}',
             {
                 'type': 'send_new_task',
                 'task': task_as_dict
             }
         )
 
-        monitor_task.delay(task.id)
+        monitor_task.delay(task.id, self.request.user.id)
         return JsonResponse(task_as_dict)
