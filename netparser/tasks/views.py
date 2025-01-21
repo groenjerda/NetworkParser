@@ -90,6 +90,7 @@ class TaskDetail(View, LoginRequiredMixin):
         )
 
     def post(self, request, *args, **kwargs):
+        old_version = request.POST.get('old_version')
         task = get_object_or_404(Task, id=kwargs['taskid'], user=request.user)
         try:
             as_info = AsInfo.objects.prefetch_related(
@@ -101,8 +102,17 @@ class TaskDetail(View, LoginRequiredMixin):
         result['networks'] = list(as_info.networks.values(
             'network', 'provider', 'country', 'ip_version'
         ))
-
         response = HttpResponse(content_type='text/plain')
+
+        if old_version == 'true':
+            response['Content-Disposition'] = (
+                f'attachment; filename="{as_info.name}.txt"'
+            )
+            networks = [
+                network.get('network') for network in result['networks']
+            ]
+            response.write('\n'.join(networks))
+            return response
         response['Content-Disposition'] = (
             f'attachment; filename="{as_info.name}.json"'
         )

@@ -33,5 +33,6 @@ CHANNEL_LAYERS = {
 # SCRAPYD_HOST = 'http://scrapyd_container:6800'
 SCRAPYD_HOST = 'http://127.0.0.1:6800'
 
+
 # BROKER_URL = 'redis://redis_container:6379/1'
 BROKER_URL = 'redis://127.0.0.1:6379/1'

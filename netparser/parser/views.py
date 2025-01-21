@@ -1,3 +1,5 @@
+import requests
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.conf import settings
@@ -60,7 +62,7 @@ class Parser(LoginRequiredMixin, View):
         input_data = request.POST.get('link')
         scrapyd = ScrapydAPI(settings.SCRAPYD_HOST)
         jobid = scrapyd.schedule(PROJECT_NAME, SPIDER, link=input_data)
-
+        # http://127.0.0.1:6800/logs/ip_networks/networks/{{task.description}}.log
         task = Task(
             name=input_data, description=jobid,
             user=request.user, status=PENDING
@@ -80,3 +82,37 @@ class Parser(LoginRequiredMixin, View):
 
         monitor_task.delay(task.id, self.request.user.id)
         return JsonResponse(task_as_dict)
+
+
+class GetLog(LoginRequiredMixin, View):
+    @method_decorator(group_required('users'))
+    def get(self, request, *args, **kwargs):
+        # http://127.0.0.1:6800/logs/ip_networks/networks/41761e44d7d611efa5820242ac140003.log
+        url = '/'.join((
+            settings.SCRAPYD_HOST, 'logs',
+            settings.BOT_NAME, settings.SPIDER_NAME,
+            f'{kwargs.get('job_id')}.log'
+        ))
+        response = requests.get(url)
+        if response.status_code == 200:
+            log_content = response.text
+            if not log_content:
+                log_content = 'Лог файл пустой'
+        else:
+            log_content = 'Лог файл не найден. Возможно, уже удален.'
+
+        try:
+            tasks = Task.objects.filter(user=request.user)
+            len(tasks)
+        except ProgrammingError as er:
+            print(type(er))
+            # Уведомить пользователя о том, что нет соединения с базой данных
+            # Или о том, что модели не созданы
+            tasks = []
+        return render(
+            request, 'parser/logs.html',
+            context={
+                'log_content': log_content,
+                'tasks': tasks
+            }
+        )

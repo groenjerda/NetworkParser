@@ -17,6 +17,10 @@
                 <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
               </svg>
             </button>
+            <div class="mx-2 my-auto">
+              <input type="checkbox" id="old-version">
+              <label for="old-version">Старая версия</label>
+            </div>
             <div id="download-asinfo" class="loader my-auto mx-1"></div>
           </div>
           <div class="table-responsive-sm">
@@ -60,13 +64,16 @@
     $(".download-button").click(function(e) {
       if ($(this).children('span').css('opacity') == 1){
         $('#download-asinfo').css('visibility', 'inherit');
-
+        var oldVersion = $('#old-version').is(":checked");
         // Отправляем AJAX-запрос на скачивание файла
         $.ajax({
           traditional: true,
           url: '{% url "tasks:detail" taskid %}',
           type: 'POST',
-          data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+          data: {
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+            'old_version': oldVersion
+          },
           xhrFields: {
               responseType: 'blob' // Указываем, что ожидаем файл
           },

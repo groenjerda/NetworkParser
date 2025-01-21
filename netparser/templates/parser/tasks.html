@@ -30,6 +30,7 @@
                 <th scope="col">Задача</th>
                 <th scope="col">Статус</th>
                 <th scope="col" class="text-center" >id задачи</th>
+                <th scope="col" >Лог</th>
               </tr>
             </thead>
             <tbody>
@@ -45,6 +46,7 @@
                     <td>{{ task.name }}</td>
                     <td class="status {{ task.status|status_class }}">{{ task.status }}</td>
                     <td class="text-center">{{ task.id }}</td>
+                    <td><a class="log-link" href="{% url 'parser:get_log' task.description %}">лог</a></td>
                   </tr>
                 {% endwith %}
               {% endfor %}

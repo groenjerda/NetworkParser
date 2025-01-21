@@ -183,3 +183,6 @@ CACHE_TIMEOUT = 864000  # 10 days
 
 USERS_GROUP = 'users'
 CANDIDATE_GROUP = 'candidate'
+
+BOT_NAME = 'ip_networks'
+SPIDER_NAME = 'networks'

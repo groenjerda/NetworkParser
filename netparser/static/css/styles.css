@@ -552,3 +552,15 @@ tr.clickable-row { cursor: pointer; }
 @keyframes l2 {
    100% {transform:rotate(calc(var(--s,1)*1turn))}
 }
+
+.log-link {
+  text-decoration: underline;
+  color: var(--yellow);
+}
+
+.log-content {
+  width: 100%;
+  min-width: 100%;
+  color: white;
+  overflow: auto;
+}
